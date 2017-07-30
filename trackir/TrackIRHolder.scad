@@ -8,6 +8,7 @@ width2 = 5.2;  // 4.75  -> 4.4; 5 -> still less
 width3 = 3.5;  // 3.25  -> 3.03
 holder_height = 7;
 
+// layer of slot of fixed width and round end on one side
 module layer(width, height, length, shift=0) {
     union() {
         translate([-width/2,0,shift])
@@ -17,6 +18,7 @@ module layer(width, height, length, shift=0) {
     }
 }
 
+// slot shape to insert remaining TrackIR pin
 module grove() {
     union() {                                       //     real   expect   diff   ratio
         layer(width3, gap3, length, 0);             // w = 3.03   3.25     -0.22
@@ -25,7 +27,7 @@ module grove() {
     }
 }
 
-
+// square piece where TrackIR stays
 module holder() {
     offset = holder_height-gap_all;
     translate([0, 5, offset]) difference() {
@@ -38,15 +40,51 @@ module holder() {
 base_wall = 3;
 base_width_ir = 40;
 base_width_cam = 30;
-base_width = base_width_ir + base_width_cam;
+base_width = base_width_ir; // + base_width_cam;
 base_gap = 44.5;
 base_height = 5;
-base_hook_height = 7;
+base_hook_height = 5; // was 7
 
-module basement() {
+// part of holder that sits on monitor
+module basement2() {
     union() {
         cube([base_width, base_gap+1.4, base_height]);
         translate([0, -base_wall, -base_hook_height]) cube([base_width, base_wall, base_height + base_hook_height]);
+        translate([0, base_gap]) rotate([20, 0, 0]) translate([0, 0, -base_hook_height-0.9]) cube([base_width, base_wall, base_height + base_hook_height]);
+    }
+}
+
+base_depth = 20;
+back_radius = 100;
+back_thickness = 5;
+
+module basement() {
+    union() {
+        // flat part
+        cube([base_width, base_depth, base_height]);
+        translate([0,12,-2]) cube([base_width, 4, base_height + 2]);
+        // front side
+        translate([0, -base_wall, -base_hook_height]) cube([base_width, base_wall, base_height + base_hook_height]);
+        // back curve
+        difference() {
+            translate([base_width/2, -back_radius/2-21, -back_radius/2+10]) rotate([0,90,0]) difference() {
+                cylinder(h=base_width, r=back_radius, center=true, $fn=100);
+                cylinder(h=base_width+2, r=back_radius - back_thickness, center=true, $fn=100);
+            }
+            translate([-1, -back_radius*3, 2]) cube([base_width+2, back_radius*6, 100]);
+            translate([-1, -back_radius*3, -back_radius*3-7]) cube([base_width+2, back_radius*6, back_radius*3]);
+            translate([-1, -back_radius*2, -back_radius]) cube([base_width+2, back_radius*2, back_radius*2]);
+        }
+    }
+}
+
+module basement2() {
+    union() {
+        // flat part
+        cube([base_width, base_gap+1.4, base_height]);
+        // front side
+        translate([0, -base_wall, -base_hook_height]) cube([base_width, base_wall, base_height + base_hook_height]);
+        // back side
         translate([0, base_gap]) rotate([20, 0, 0]) translate([0, 0, -base_hook_height-0.9]) cube([base_width, base_wall, base_height + base_hook_height]);
     }
 }
@@ -61,6 +99,6 @@ rotate([90, 0, 0]) union() {
         basement();
     translate([base_width_ir/2, 0, base_height]) 
         holder();
-    translate([base_width_ir + (base_width_cam - cam_holder_width)/2, cam_holder_offset - cam_holder_thinkness - base_wall, base_height]) 
-        cube([cam_holder_width, cam_holder_thinkness, cam_holder_height]);
+    // translate([base_width_ir + (base_width_cam - cam_holder_width)/2, cam_holder_offset - cam_holder_thinkness - base_wall, base_height]) 
+    //     cube([cam_holder_width, cam_holder_thinkness, cam_holder_height]);
 }
