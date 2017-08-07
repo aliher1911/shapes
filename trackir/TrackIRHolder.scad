@@ -56,16 +56,17 @@ module basement2() {
 
 wire_dia = 2;
 wire_thick = 1.5;
+wire_thick2 = 2;
 wire_gap_width = 1.3;
 
 module wire_hole() {
     difference() {
         union() {
-            cylinder(h=wire_thick, r=wire_dia/2+wire_thick, center=true, $fn=100);
-            translate([0,-(wire_dia/2+wire_thick)/2,0]) cube([wire_dia+wire_thick*2, wire_dia/2+wire_thick, wire_thick], center=true);
+            cylinder(h=wire_thick2, r=wire_dia/2+wire_thick, center=true, $fn=100);
+            translate([0,-(wire_dia/2+wire_thick)/2,0]) cube([wire_dia+wire_thick*2, wire_dia/2+wire_thick, wire_thick2], center=true);
         }
-        cylinder(h=wire_thick+1, r=wire_dia/2, center=true, $fn=100);
-        translate([0,wire_dia+wire_thick,0]) cube([wire_gap_width, (wire_dia+wire_thick) * 2, wire_thick+1], center=true);
+        cylinder(h=wire_thick2+1, r=wire_dia/2, center=true, $fn=100);
+        translate([0,wire_dia+wire_thick,0]) cube([wire_gap_width, (wire_dia+wire_thick) * 2, wire_thick2+1], center=true);
     }
 }
 
